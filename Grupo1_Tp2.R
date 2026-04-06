@@ -30,3 +30,9 @@ x11(50,30); # Sistema Operativo Linux
 # windows(50, 30); # Sistema operativo Windows
 par(mfrow=c(2,4))
 hist(melatonine$TIB_ACT, breaks=30, main="Tiempo acostado", xlab="TIB (minutos)", ylab="Frecuencia")
+hist(melatonine$TST_ACT, breaks=30, main="Tiempo Total Sueño", xlab="TST (minutos)", ylab="Frecuencia")
+hist(melatonine$SOL_ACT, breaks=30, main="Latencia de Sueño", xlab="SOL (minutos)", ylab="Frecuencia")
+hist(melatonine$SE_ACT, breaks=30, main="Eficiencia sueño", xlab="SE (%)", ylab="Frecuencia")
+hist(melatonine$SET1_ACT, breaks=30, main="Eficiencia sueño - 1er tercil", xlab="SET1 (%)", ylab="Frecuencia")
+hist(melatonine$SET2_ACT, breaks=30, main="Eficiencia sueño - 2do tercil", xlab="SET2 (%)", ylab="Frecuencia")
+hist(melatonine$SET3_ACT, breaks=30, main="Eficiencia sueño - 3er tercil", xlab="SET3 (%)", ylab="Frecuencia")
