@@ -36,3 +36,51 @@ hist(melatonine$SE_ACT, breaks=30, main="Eficiencia sueño", xlab="SE (%)", ylab
 hist(melatonine$SET1_ACT, breaks=30, main="Eficiencia sueño - 1er tercil", xlab="SET1 (%)", ylab="Frecuencia")
 hist(melatonine$SET2_ACT, breaks=30, main="Eficiencia sueño - 2do tercil", xlab="SET2 (%)", ylab="Frecuencia")
 hist(melatonine$SET3_ACT, breaks=30, main="Eficiencia sueño - 3er tercil", xlab="SET3 (%)", ylab="Frecuencia")
+
+library(ggplot2)
+library(gridExtra)
+x11(50, 30);
+p1 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = TIB_ACT)) +
+  geom_boxplot() +
+  labs(title = "Tiempo Acostado",
+       x = "Tratamiento",
+       y = "Tiempo acostado (min)") +
+  theme_minimal()
+p2 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = TST_ACT)) +
+  geom_boxplot() +
+  labs(title = "Tiempo Total Sueño",
+       x = "Tratamiento",
+       y = "Tiempo Total Sueño (min)") +
+  theme_minimal()
+p3 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SOL_ACT)) +
+  geom_boxplot() +
+  labs(title = "Latencia de Sueño",
+       x = "Tratamiento",
+       y = "Latencia de Sueño (min)") +
+  theme_minimal()
+p4 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SE_ACT)) +
+  geom_boxplot() +
+  labs(title = "Eficiencia sueño",
+       x = "Tratamiento",
+       y = "Eficiencia sueño (%)") +
+  theme_minimal()
+p5 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SET1_ACT)) +
+  geom_boxplot() +
+  labs(title = "Eficiencia sueño - 1er tercil",
+       x = "Tratamiento",
+       y = "Eficiencia sueño (min)") +
+  theme_minimal()
+p6 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SET2_ACT)) +
+  geom_boxplot() +
+  labs(title = "Eficiencia sueño - 2do tercil",
+       x = "Tratamiento",
+       y = "Eficiencia sueño (%)") +
+  theme_minimal()
+p7 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SET3_ACT)) +
+  geom_boxplot() +
+  labs(title = "Eficiencia sueño - 3er tercil",
+       x = "Tratamiento",
+       y = "Eficiencia sueño (%)") +
+  theme_minimal()
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, nrow=2, ncol=4)
+x11();boxplot(melatonine$TIB_ACT ~ melatonine$Treatment + melatonine$StudyPeriodWeek)
