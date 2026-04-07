@@ -1,86 +1,69 @@
-# Cambiar de acuerdo a la ubicación de los archivos de datos
-setwd("/home/nadia/unsl/bio/code/unsl-bio/data")
+#-------------Análisis Exploratorio--------------------#
+#-------------Materia Optativa I ----------------------#
+#--------------Autores: -------------------------------#
+#-----FERRAGUTTI - SANTILLAN - VILLARREAL--------------#
+#-------------------Año: 2026 -------------------------#
 
+# ----------------Ruta del archivo --------------------#
+# Cambiar de acuerdo a la ubicación de los archivos de datos
+setwd("C:/Users/Usuario/Documents/UNSL/Cuarto Año/Optativa I")
+# setwd("/home/nadia/unsl/bio/code/unsl-bio/data")
+
+# ------------------Carga de Librerias----------------#
 library(readxl)
+library(ggplot2)
+library(gridExtra)
+
+# ----------------- Creación de la base de datos --------------------------#
 melatonine_all <- read_excel("pmed.1002587.s005.xlsx", sheet = "Combined")
 melatonine <- melatonine_all[,c("ParticipantID", "Treatment", "Delayed/Not Delayed", 
 "StudyPeriodWeek", "Work/Non-work", "TIB_ACT", "TST_ACT", "SOL_ACT",	"SE_ACT",	
 "WASO_ACT",	"SET1_ACT",	"SET2_ACT",	"SET3_ACT")]
 
-x11(50,30); # Sistema Operativo Linux
+# ------------------------- Variables auxiliares --------------------------#
+melatonine$Base <- ifelse(melatonine$StudyPeriodWeek == 0, "Sí", "No")
+melatonine$TratamientoDesc <- ifelse(melatonine$Treatment == 1, "Placebo", "Melatonina 0.5 mg")
+
+# ----------------------- UA Base vs Tratamiento --------------------------#
+baseline <- melatonine[melatonine$StudyPeriodWeek == 0,]
+treatment <- melatonine[melatonine$StudyPeriodWeek != 0,]
+
+# ------------------ Distribuciones de variables categóricas --------------------------#
 # windows(50, 30); # Sistema operativo Windows
+x11(50,30); # Sistema Operativo Linux
 par(mfrow=c(1,4))
 barplot(table(melatonine$Treatment), main="Tratamiento", xlab="Tratamiento", ylab="Frecuencia")
 barplot(table(melatonine$`Delayed/Not Delayed`), main="Diagnóstico retraso sueño", xlab="Retraso sueño", ylab="Frecuencia")
 barplot(table(melatonine$`Work/Non-work`), main="Trabaja día registro", xlab="Trabaja", ylab="Frecuencia")
 barplot(table(melatonine$StudyPeriodWeek), main="Semana de estudio", xlab="Semana", ylab="Frecuencia")
 
+# ------------------- Diagramas de caja para las variables continuas ------------------#
+# windows(50, 30); # Sistema operativo Windows
+x11(50,30); # Sistema Operativo Linux
+par(mfrow=c(1,2))
+boxplot(melatonine$SOL_ACT~melatonine$Base, col="darkorange", ylab="Latencia de inicio de sueño - SOL (minutos)", xlab="Semana base")
+boxplot(melatonine$SET1_ACT~melatonine$Base, col="darkorange", ylab="Eficiencia del sueño 1er tercio - SET1 (%)", xlab="Semana base")
+
+# -------------------- Histogramas variables continuas --------------------------------#
 x11(50,30); # Sistema Operativo Linux
 # windows(50, 30); # Sistema operativo Windows
-par(mfrow=c(2,4))
-boxplot(melatonine$TIB_ACT, col="darkorange", ylab="Tiempo acostado - TIB (minutos)")
-boxplot(melatonine$TST_ACT, col="darkorange", ylab="Tiempo total de sueño - TST (minutos)")
-boxplot(melatonine$SOL_ACT, col="darkorange", ylab="Latencia de inicio de sueño - SOL (minutos)")
-boxplot(melatonine$SE_ACT, col="darkorange", ylab="Eficiencia del sueño - SE (%)")
-boxplot(melatonine$SET1_ACT, col="darkorange", ylab="Eficiencia del sueño 1er tercil - SET1 (%)")
-boxplot(melatonine$SET2_ACT, col="darkorange", ylab="Eficiencia del sueño 2do tercil- SET2 (%)")
-boxplot(melatonine$SET3_ACT, col="darkorange", ylab="Eficiencia del sueño 3er tercil - SET3 (%)")
+par(mfrow=c(2,2))
+hist(baseline$SOL_ACT, breaks=30, main="Latencia de Sueño - Base", xlab="SOL (minutos)", ylab="Frecuencia")
+hist(baseline$SET1_ACT, breaks=30, main="Eficiencia sueño - 1er tercil - Base", xlab="SET1 (%)", ylab="Frecuencia")
+hist(treatment$SOL_ACT, breaks=30, main="Latencia de Sueño - Tratamiento", xlab="SOL (minutos)", ylab="Frecuencia")
+hist(treatment$SET1_ACT, breaks=30, main="Eficiencia sueño - 1er tercil - Tratamiento", xlab="SET1 (%)", ylab="Frecuencia")
 
-x11(50,30); # Sistema Operativo Linux
-# windows(50, 30); # Sistema operativo Windows
-par(mfrow=c(2,4))
-hist(melatonine$TIB_ACT, breaks=30, main="Tiempo acostado", xlab="TIB (minutos)", ylab="Frecuencia")
-hist(melatonine$TST_ACT, breaks=30, main="Tiempo Total Sueño", xlab="TST (minutos)", ylab="Frecuencia")
-hist(melatonine$SOL_ACT, breaks=30, main="Latencia de Sueño", xlab="SOL (minutos)", ylab="Frecuencia")
-hist(melatonine$SE_ACT, breaks=30, main="Eficiencia sueño", xlab="SE (%)", ylab="Frecuencia")
-hist(melatonine$SET1_ACT, breaks=30, main="Eficiencia sueño - 1er tercil", xlab="SET1 (%)", ylab="Frecuencia")
-hist(melatonine$SET2_ACT, breaks=30, main="Eficiencia sueño - 2do tercil", xlab="SET2 (%)", ylab="Frecuencia")
-hist(melatonine$SET3_ACT, breaks=30, main="Eficiencia sueño - 3er tercil", xlab="SET3 (%)", ylab="Frecuencia")
-
-library(ggplot2)
-library(gridExtra)
-x11(50, 30);
-p1 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = TIB_ACT)) +
-  geom_boxplot() +
-  labs(title = "Tiempo Acostado",
-       x = "Tratamiento",
-       y = "Tiempo acostado (min)") +
-  theme_minimal()
-p2 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = TST_ACT)) +
-  geom_boxplot() +
-  labs(title = "Tiempo Total Sueño",
-       x = "Tratamiento",
-       y = "Tiempo Total Sueño (min)") +
-  theme_minimal()
-p3 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SOL_ACT)) +
+# ------------------- Varianzas por tratamiento y semana -------------------------------#
+x11();ggplot(melatonine, aes(x = factor(TratamientoDesc), fill = Base, y = SOL_ACT)) +
   geom_boxplot() +
   labs(title = "Latencia de Sueño",
        x = "Tratamiento",
        y = "Latencia de Sueño (min)") +
   theme_minimal()
-p4 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SE_ACT)) +
+x11();ggplot(melatonine, aes(x = factor(TratamientoDesc), fill = Base, y = SET1_ACT)) +
   geom_boxplot() +
-  labs(title = "Eficiencia sueño",
-       x = "Tratamiento",
-       y = "Eficiencia sueño (%)") +
-  theme_minimal()
-p5 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SET1_ACT)) +
-  geom_boxplot() +
-  labs(title = "Eficiencia sueño - 1er tercil",
+  labs(title = "Eficiencia sueño - 1er tercio",
        x = "Tratamiento",
        y = "Eficiencia sueño (min)") +
   theme_minimal()
-p6 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SET2_ACT)) +
-  geom_boxplot() +
-  labs(title = "Eficiencia sueño - 2do tercil",
-       x = "Tratamiento",
-       y = "Eficiencia sueño (%)") +
-  theme_minimal()
-p7 <- ggplot(melatonine, aes(x = factor(Treatment), fill = factor(StudyPeriodWeek), y = SET3_ACT)) +
-  geom_boxplot() +
-  labs(title = "Eficiencia sueño - 3er tercil",
-       x = "Tratamiento",
-       y = "Eficiencia sueño (%)") +
-  theme_minimal()
-grid.arrange(p1, p2, p3, p4, p5, p6, p7, nrow=2, ncol=4)
-x11();boxplot(melatonine$TIB_ACT ~ melatonine$Treatment + melatonine$StudyPeriodWeek)
+
