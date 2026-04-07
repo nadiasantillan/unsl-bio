@@ -6,10 +6,12 @@
 
 # ----------------Ruta del archivo --------------------#
 # Cambiar de acuerdo a la ubicación de los archivos de datos
-setwd("C:/Users/Usuario/Documents/UNSL/Cuarto Año/Optativa I")
+#setwd("C:/Users/Usuario/Documents/UNSL/Cuarto Año/Optativa I")
 # setwd("/home/nadia/unsl/bio/code/unsl-bio/data")
 
 # ------------------Carga de Librerias----------------#
+install.packages("ggplot2")
+install.packages("gridExtra")
 library(readxl)
 library(ggplot2)
 library(gridExtra)
@@ -20,6 +22,10 @@ melatonine <- melatonine_all[,c("ParticipantID", "Treatment", "Delayed/Not Delay
 "StudyPeriodWeek", "Work/Non-work", "TIB_ACT", "TST_ACT", "SOL_ACT",	"SE_ACT",	
 "WASO_ACT",	"SET1_ACT",	"SET2_ACT",	"SET3_ACT")]
 
+# ----------------- Escrutinio de Datos Faltantes (NAs) -------------------#
+# El artículo menciona que no hubo imputación; se verifica cuántos nulls hay por variable (sobre un total 3734)
+colSums(is.na(melatonine[, c("SOL_ACT", "SET1_ACT")]))
+
 # ------------------------- Variables auxiliares --------------------------#
 melatonine$Base <- ifelse(melatonine$StudyPeriodWeek == 0, "Sí", "No")
 melatonine$TratamientoDesc <- ifelse(melatonine$Treatment == 1, "Placebo", "Melatonina 0.5 mg")
@@ -29,8 +35,8 @@ baseline <- melatonine[melatonine$StudyPeriodWeek == 0,]
 treatment <- melatonine[melatonine$StudyPeriodWeek != 0,]
 
 # ------------------ Distribuciones de variables categóricas --------------------------#
-# windows(50, 30); # Sistema operativo Windows
 x11(50,30); # Sistema Operativo Linux
+windows(50,30) # Sistema operativo Windows
 par(mfrow=c(1,4))
 barplot(table(melatonine$Treatment), main="Tratamiento", xlab="Tratamiento", ylab="Frecuencia")
 barplot(table(melatonine$`Delayed/Not Delayed`), main="Diagnóstico retraso sueño", xlab="Retraso sueño", ylab="Frecuencia")
@@ -54,16 +60,22 @@ hist(treatment$SOL_ACT, breaks=30, main="Latencia de Sueño - Tratamiento", xlab
 hist(treatment$SET1_ACT, breaks=30, main="Eficiencia sueño - 1er tercil - Tratamiento", xlab="SET1 (%)", ylab="Frecuencia")
 
 # ------------------- Varianzas por tratamiento y semana -------------------------------#
+#windows()
 x11();ggplot(melatonine, aes(x = factor(TratamientoDesc), fill = Base, y = SOL_ACT)) +
   geom_boxplot() +
   labs(title = "Latencia de Sueño",
        x = "Tratamiento",
        y = "Latencia de Sueño (min)") +
   theme_minimal()
-x11();ggplot(melatonine, aes(x = factor(TratamientoDesc), fill = Base, y = SET1_ACT)) +
+x11();
+#windows()
+ggplot(melatonine, aes(x = factor(TratamientoDesc), fill = Base, y = SET1_ACT)) +
   geom_boxplot() +
   labs(title = "Eficiencia sueño - 1er tercio",
        x = "Tratamiento",
-       y = "Eficiencia sueño (min)") +
+       y = "Eficiencia sueño (%)") +
   theme_minimal()
 
+# ---------------- Independencia: Observaciones por Participante ------------------------#
+obs_por_sujeto <- table(melatonine$ParticipantID)
+hist(obs_por_sujeto, main="Nro de noches registradas por participante")
