@@ -28,6 +28,10 @@ melatonine$TratamientoDesc <- ifelse(melatonine$Treatment == 1, "Placebo", "Mela
 baseline <- melatonine[melatonine$StudyPeriodWeek == 0,]
 treatment <- melatonine[melatonine$StudyPeriodWeek != 0,]
 
+# ----------------- Escrutinio de Datos Faltantes (NAs) -------------------#
+# El artículo menciona que no hubo imputación; se verifica cuántos nulls hay por variable (sobre un total 3734)
+colSums(is.na(melatonine[, c("SOL_ACT", "SET1_ACT")]))
+
 # ------------------ Distribuciones de variables categóricas --------------------------#
 # windows(50, 30); # Sistema operativo Windows
 x11(50,30); # Sistema Operativo Linux
@@ -64,6 +68,11 @@ x11();ggplot(melatonine, aes(x = factor(TratamientoDesc), fill = Base, y = SET1_
   geom_boxplot() +
   labs(title = "Eficiencia sueño - 1er tercio",
        x = "Tratamiento",
-       y = "Eficiencia sueño (min)") +
+       y = "Eficiencia sueño (%)") +
   theme_minimal()
+
+# ---------------- Independecia:Observaciones por Participante -------------------------#
+obs_por_sujeto <- table(melatonine$ParticipantID)
+hist(obs_por_sujeto, main="Nro de noches registradas por participante")
+
 
