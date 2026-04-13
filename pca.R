@@ -1,4 +1,6 @@
 library(readxl)
+library(ggplot2)
+library(ggbiplot)
 
 setwd("/home/nadia/unsl/bio/code/unsl-bio/data")
 
@@ -18,8 +20,17 @@ head(melatonine)
 melatonine_num <- melatonine[, c("TIB_ACT", "TST_ACT", "SOL_ACT", "SE_ACT", "WASO_ACT", "SET1_ACT", "SET2_ACT", "SET3_ACT")]
 summary(melatonine_num)
 
-pca <- prcomp(na.omit(melatonine_num), scale = T, center = T)
+x <- na.omit(melatonine_num)
+pca <- prcomp(x, scale = T, center = T)
 
-names(pca)
-pca $scale
-biplot(pca)
+summary(pca)
+ggbiplot(pca, obs.scale = 1, var.scale = 1,
+                   # groups = iris$Species, 
+                   point.size=1,
+                   varname.size = 3, 
+                   varname.color = "red",
+                   varname.adjust = 1.2,
+                   ellipse = F, 
+                   circle = F) +
+  # labs( color = "Species") +
+  theme_minimal(base_size = 20) 
